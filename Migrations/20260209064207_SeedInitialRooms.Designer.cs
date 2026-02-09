@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RoomBookingBackend.Data;
@@ -11,9 +12,11 @@ using RoomBookingBackend.Data;
 namespace room_booking_backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260209064207_SeedInitialRooms")]
+    partial class SeedInitialRooms
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,22 +86,22 @@ namespace room_booking_backend.Migrations
                         new
                         {
                             Id = 1,
-                            Capacity = 50,
-                            Facilities = "Sound System, Projector, Meja, Kursih, AC",
+                            Capacity = 100,
+                            Facilities = "Sound System, Projector, AC",
                             IsAvailable = true,
                             IsDeleted = false,
-                            Location = "Gedung D3 Lantai 1",
-                            Name = "Mini Theater D3"
+                            Location = "Gedung D4 Lantai 2",
+                            Name = "Ruang Teater 1"
                         },
                         new
                         {
                             Id = 2,
-                            Capacity = 200,
-                            Facilities = " LED Display/Videotron, Sound System, Projector, Meja, Kursih, AC",
+                            Capacity = 10,
+                            Facilities = "Whiteboard, AC",
                             IsAvailable = true,
                             IsDeleted = false,
-                            Location = "Lt.6 Gedung Pasca Sarjana",
-                            Name = "Auditorium Gedung Pasca Sarjana"
+                            Location = "Gedung D3 Lantai 1",
+                            Name = "Ruang Meeting Kecil"
                         });
                 });
 
