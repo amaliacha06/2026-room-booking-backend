@@ -1,12 +1,38 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace RoomBookingBackend.Models
 {
     public class Booking
     {
+        [Key]
         public int Id { get; set; }
-        public int RoomId { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
-        public Room? Room { get; set; } // navigation boleh null
-    }
 
+        [Required]
+        public int RoomId { get; set; }
+
+        [Required]
+        public int UserId { get; set; }
+
+        [Required]
+        public DateTime StartTime { get; set; }
+
+        [Required]
+        public DateTime EndTime { get; set; }
+
+        // Status: Pending, Approved, Rejected, Canceled
+        public string Status { get; set; } = "Pending";
+
+        public bool IsDeleted { get; set; } = false; // Untuk Soft Delete sesuai panduan
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // --- RELASI (Navigation Properties) ---
+        
+        [ForeignKey("RoomId")]
+        public virtual Room? Room { get; set; }
+
+        [ForeignKey("UserId")]
+        public virtual User? User { get; set; }
+    }
 }
