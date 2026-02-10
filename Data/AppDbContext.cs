@@ -60,7 +60,7 @@ namespace RoomBookingBackend.Data
                     Id = 1,
                     RoomId = 1, // Menyambung ke Mini Theater D3
                     UserId = 1, // Menyambung ke Amalia Chasanah Zahty
-                    Purpose = "Belajar pembuatan web",
+                    Purpose = "Workshop UI/UX",
                     StartTime = DateTime.Parse("2026-02-11 08:00:00"). ToUniversalTime(),
                     EndTime = DateTime.Parse("2026-02-11 10:00:00").ToUniversalTime(),
                     Status = "Selesai",
@@ -71,7 +71,7 @@ namespace RoomBookingBackend.Data
                     Id = 2,
                     RoomId = 2, // Menyambung ke Auditorium
                     UserId = 1, 
-                    Purpose = "Tes pengajuan peminjaman",
+                    Purpose = "Pameran PENSASI & Beasiswa Study Aboard",
                     StartTime = DateTime.Parse("2026-02-12 13:00:00").ToUniversalTime(),
                     EndTime = DateTime.Parse("2026-02-12 15:00:00").ToUniversalTime(),
                     Status = "Pending",
