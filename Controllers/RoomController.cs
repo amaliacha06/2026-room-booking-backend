@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RoomBookingBackend.Data;
 using RoomBookingBackend.Models;
 using RoomBookingBackend.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RoomBookingBackend.Controllers
 {
@@ -35,6 +36,7 @@ namespace RoomBookingBackend.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")] 
         public async Task<ActionResult<Room>> PostRoom(RoomCreateDto dto)
         {
             // Mapping dari DTO ke Model
@@ -51,6 +53,7 @@ namespace RoomBookingBackend.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")] // Cuma Admin yang boleh edit!
         public async Task<IActionResult> PutRoom(int id, RoomCreateDto dto)
         {
             var room = await _context.Rooms.FindAsync(id);
@@ -66,6 +69,7 @@ namespace RoomBookingBackend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")] // Hanya Admin yang boleh hapus
         public async Task<IActionResult> DeleteRoom(int id)
         {
             var room = await _context.Rooms.FindAsync(id);
