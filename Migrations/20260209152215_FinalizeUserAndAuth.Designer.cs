@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RoomBookingBackend.Data;
@@ -11,9 +12,11 @@ using RoomBookingBackend.Data;
 namespace room_booking_backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260209152215_FinalizeUserAndAuth")]
+    partial class FinalizeUserAndAuth
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,19 +143,6 @@ namespace room_booking_backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2026, 2, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "admin@gmail.com",
-                            FullName = "Admin1",
-                            PasswordHash = "$2a$11$L1gcQKHTzIAIraON.575GOYlsqfFcWhu5raU8YKTGkKRg4k/OdVsa",
-                            PhoneNumber = "081122334455",
-                            Position = "Admin",
-                            Username = "adminku"
-                        });
                 });
 
             modelBuilder.Entity("RoomBookingBackend.Models.Booking", b =>

@@ -17,9 +17,21 @@ namespace RoomBookingBackend.Data
         // Tambahkan ini untuk Data Seeding 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Seeding User Admin
+            modelBuilder.Entity<User>().HasData(new User
+            {
+                Id = 2, // Gunakan ID 2 karena ID 1 sudah pakai di pgAdmin
+                FullName = "Admin1",
+                Username = "adminku",
+                Email = "admin@gmail.com",
+                PasswordHash = "$2a$11$L1gcQKHTzIAIraON.575GOYlsqfFcWhu5raU8YKTGkKRg4k/OdVsa",
+                Position = "Admin",
+                PhoneNumber = "081122334455",
+                CreatedAt = new DateTime(2026, 2, 10, 0, 0, 0, DateTimeKind.Utc)
+            });
             base.OnModelCreating(modelBuilder);
 
-            // Menambahkan data awal untuk tabel Rooms
+            // Menambahkan data awal(seeding) untuk tabel Rooms
             modelBuilder.Entity<Room>().HasData(
                 new Room
                 {
