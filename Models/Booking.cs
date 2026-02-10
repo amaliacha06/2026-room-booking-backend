@@ -13,6 +13,8 @@ namespace RoomBookingBackend.Models
 
         [Required]
         public int UserId { get; set; }
+        // Untuk kolom "Keterangan"
+    public string Purpose { get; set; }
 
         [Required]
         public DateTime StartTime { get; set; }
@@ -22,7 +24,7 @@ namespace RoomBookingBackend.Models
 
         // Status: Pending, Approved, Rejected, Canceled
         public string Status { get; set; } = "Pending";
-
+        // Untuk "Waktu Pengajuan"
         public bool IsDeleted { get; set; } = false; // Untuk Soft Delete sesuai panduan
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
