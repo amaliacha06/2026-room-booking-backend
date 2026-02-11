@@ -14,7 +14,7 @@ namespace RoomBookingBackend.Models
         [Required]
         public int UserId { get; set; }
         // Untuk kolom "Keterangan"
-    public string Purpose { get; set; }
+        public string Purpose { get; set; }
 
         [Required]
         public DateTime StartTime { get; set; }
@@ -30,7 +30,7 @@ namespace RoomBookingBackend.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // --- RELASI (Navigation Properties) ---
-        
+
         [ForeignKey("RoomId")]
         public virtual Room? Room { get; set; }
 
