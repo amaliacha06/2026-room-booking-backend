@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RoomBookingBackend.Data;
@@ -11,9 +12,11 @@ using RoomBookingBackend.Data;
 namespace room_booking_backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260210173609_SeedBookingData")]
+    partial class SeedBookingData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,10 +71,10 @@ namespace room_booking_backend.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 2, 10, 18, 14, 14, 167, DateTimeKind.Utc).AddTicks(6284),
+                            CreatedAt = new DateTime(2026, 2, 10, 17, 36, 8, 758, DateTimeKind.Utc).AddTicks(9417),
                             EndTime = new DateTime(2026, 2, 11, 3, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
-                            Purpose = "Workshop UI/UX",
+                            Purpose = "Belajar pembuatan web",
                             RoomId = 1,
                             StartTime = new DateTime(2026, 2, 11, 1, 0, 0, 0, DateTimeKind.Utc),
                             Status = "Selesai",
@@ -80,10 +83,10 @@ namespace room_booking_backend.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 2, 10, 18, 14, 14, 167, DateTimeKind.Utc).AddTicks(6311),
+                            CreatedAt = new DateTime(2026, 2, 10, 17, 36, 8, 758, DateTimeKind.Utc).AddTicks(9440),
                             EndTime = new DateTime(2026, 2, 12, 8, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
-                            Purpose = "Pameran PENSASI & Beasiswa Study Aboard",
+                            Purpose = "Tes pengajuan peminjaman",
                             RoomId = 2,
                             StartTime = new DateTime(2026, 2, 12, 6, 0, 0, 0, DateTimeKind.Utc),
                             Status = "Pending",

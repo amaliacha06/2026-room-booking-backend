@@ -17,6 +17,7 @@ namespace RoomBookingBackend.Data
         // Tambahkan ini untuk Data Seeding 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             // Seeding User Admin
             modelBuilder.Entity<User>().HasData(new User
             {
@@ -29,7 +30,6 @@ namespace RoomBookingBackend.Data
                 PhoneNumber = "081122334455",
                 CreatedAt = new DateTime(2026, 2, 10, 0, 0, 0, DateTimeKind.Utc)
             });
-            base.OnModelCreating(modelBuilder);
 
             // Menambahkan data awal(seeding) untuk tabel Rooms
             modelBuilder.Entity<Room>().HasData(
@@ -52,6 +52,30 @@ namespace RoomBookingBackend.Data
                     Facilities = " LED Display/Videotron, Sound System, Projector, Meja, Kursih, AC",
                     IsAvailable = true,
                     IsDeleted = false
+                }
+            );
+            modelBuilder.Entity<Booking>().HasData(
+                new Booking
+                {
+                    Id = 1,
+                    RoomId = 1, // Menyambung ke Mini Theater D3
+                    UserId = 1, // Menyambung ke Amalia Chasanah Zahty
+                    Purpose = "Workshop UI/UX",
+                    StartTime = DateTime.Parse("2026-02-11 08:00:00"). ToUniversalTime(),
+                    EndTime = DateTime.Parse("2026-02-11 10:00:00").ToUniversalTime(),
+                    Status = "Selesai",
+                    CreatedAt = DateTime.UtcNow
+                },
+                new Booking
+                {
+                    Id = 2,
+                    RoomId = 2, // Menyambung ke Auditorium
+                    UserId = 1, 
+                    Purpose = "Pameran PENSASI & Beasiswa Study Aboard",
+                    StartTime = DateTime.Parse("2026-02-12 13:00:00").ToUniversalTime(),
+                    EndTime = DateTime.Parse("2026-02-12 15:00:00").ToUniversalTime(),
+                    Status = "Pending",
+                    CreatedAt = DateTime.UtcNow
                 }
             );
         }
