@@ -3,17 +3,17 @@ using RoomBookingBackend.Data;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models; // <- sudah cukup ini saja
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- 1. KONFIGURASI SERVICES ---
+// 1. KONFIGURASI SERVICES
 builder.Services.AddEndpointsApiExplorer();
 
 // Konfigurasi Swagger dengan Ikon Gembok (Authorize)
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo   // <- hapus prefix
+    options.SwaggerDoc("v1", new OpenApiInfo 
     {
         Title = "Room Booking API",
         Version = "v1"
@@ -53,7 +53,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Ambil data dari appsettings.json
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!); // <- biar warning null hilang
+var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!); 
 
 // Daftarkan sistem autentikasi
 builder.Services.AddAuthentication(options =>
@@ -72,7 +72,6 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key),
-         // 👇 TAMBAHKAN DUA BARIS INI!
         RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
         NameClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/name"
     };
@@ -80,9 +79,21 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+// Kebijakan CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // Alamat Frontend Vite
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
 
-// --- 2. MIDDLEWARE PIPELINE ---
+// 2. MIDDLEWARE PIPELINE
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -90,8 +101,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+// Aktifkan Routing 
+app.UseRouting();
 
-// URUTAN WAJIB: Authentication dulu, baru Authorization
+app.UseCors("AllowFrontend"); // Aktifkan kebijakan CORS
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -99,7 +113,7 @@ app.MapControllers();
 
 app.Run();
 
-// Record WeatherForecast diletakkan di luar biar rapi
+// Record WeatherForecast diletakkan di luar
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
