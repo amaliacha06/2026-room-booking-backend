@@ -32,7 +32,7 @@ namespace RoomBookingBackend.Controllers
                 {
                     Id = b.Id,
                     RoomName = b.Room.Name,
-                    UserName = b.User.Username, 
+                    UserName = b.User.Username,
                     Purpose = b.Purpose,
                     StartTime = b.StartTime,
                     EndTime = b.EndTime,
@@ -47,7 +47,13 @@ namespace RoomBookingBackend.Controllers
         [HttpGet("my-bookings")]
         public async Task<ActionResult<IEnumerable<BookingResponseDto>>> GetMyBookings()
         {
-            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User ID tidak ditemukan dalam token." });
+            }
+            var userId = int.Parse(userIdClaim.Value);
+
 
             var bookings = await _context.Bookings
                 .Include(b => b.Room)
@@ -80,9 +86,16 @@ namespace RoomBookingBackend.Controllers
             // 1. Validasi: Jam Selesai tidak boleh sebelum Jam Mulai
             if (bookingDto.EndTime <= bookingDto.StartTime)
             {
+
                 return BadRequest(new { message = "Waktu selesai harus lebih lambat dari waktu mulai!" });
             }
-            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User ID tidak ditemukan dalam token." });
+            }
+
+            var userId = int.Parse(userIdClaim.Value);
 
             // 2. Mapping dari DTO ke Model asli database
             var booking = new Booking
@@ -125,8 +138,8 @@ namespace RoomBookingBackend.Controllers
             return CreatedAtAction(nameof(GetBookings), new { id = booking.Id }, new BookingResponseDto
             {
                 Id = booking.Id,
-                RoomName = createdBooking?.Room?.Name ?? "N/A", 
-                UserName = createdBooking?.User?.Username ?? "N/A", 
+                RoomName = createdBooking?.Room?.Name ?? "N/A",
+                UserName = createdBooking?.User?.Username ?? "N/A",
                 Purpose = booking.Purpose,
                 StartTime = booking.StartTime,
                 EndTime = booking.EndTime,
@@ -144,7 +157,7 @@ namespace RoomBookingBackend.Controllers
                 .Include(b => b.Room)
                 .Include(b => b.User)
                 .Where(b => b.Id == id && b.IsDeleted == false)
-                .Select(b => new BookingResponseDto 
+                .Select(b => new BookingResponseDto
                 {
                     Id = b.Id,
                     UserName = b.User.Username,
@@ -168,26 +181,33 @@ namespace RoomBookingBackend.Controllers
         // 4.PUT: api/Bookings/{id} (Untuk User Edit Pesanan)
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBooking(int id, [FromBody] BookingCreateDto updatedDto)
+        public async Task<IActionResult> UpdateBooking(int id, [FromBody] BookingUpdateDto updatedDto)
         {
             var booking = await _context.Bookings.FindAsync(id);
             if (booking == null) return NotFound();
 
-            // Logika User: Hanya bisa edit kalau masih Pending
+            // Hanya boleh edit jika status Pending
             if (booking.Status != "Pending")
             {
                 return BadRequest(new { message = "Pesanan sudah diproses admin, tidak bisa diubah lagi!" });
             }
 
-            // Update data dari DTO
+            // Update data
             booking.Purpose = updatedDto.Purpose;
             booking.StartTime = updatedDto.StartTime;
             booking.EndTime = updatedDto.EndTime;
-            booking.RoomId = updatedDto.RoomId;
 
-            await _context.SaveChangesAsync();
-            return NoContent();
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "Booking berhasil diperbarui" });
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(new { message = ex.InnerException?.Message ?? "Terjadi kesalahan sistem." });
+            }
         }
+
         // 5. PUT: api/Bookings/ (Untuk Admin menyetujui atau menolak pinjaman)
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}/status")]
@@ -226,7 +246,7 @@ namespace RoomBookingBackend.Controllers
             // 1. CEK: Apakah dia Admin?
             bool isAdmin = User.IsInRole("Admin");
 
-            // 2. LOGIKA: Jika BUKAN Admin DAN status sudah BUKAN Pending, maka TOLAK
+            // 2. Jika Bukan Admin dan status sudah Bukan Pending, maka TOLAK
             if (!isAdmin && booking.Status != "Pending")
             {
                 return BadRequest(new { message = "Booking sudah disetujui Admin!" });
