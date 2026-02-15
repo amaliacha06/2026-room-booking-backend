@@ -10,10 +10,12 @@ namespace RoomBookingBackend.Models
 
         [Required]
         public int RoomId { get; set; }
+        [ForeignKey("RoomId")]
+        public virtual Room? Room { get; set; }
 
         [Required]
         public int UserId { get; set; }
-        // Untuk kolom "Keterangan"
+        public User User { get; set; }
         public string Purpose { get; set; }
 
         [Required]
@@ -24,17 +26,7 @@ namespace RoomBookingBackend.Models
 
         // Status: Pending, Approved, Rejected, Canceled
         public string Status { get; set; } = "Pending";
-        // Untuk "Waktu Pengajuan"
-        public bool IsDeleted { get; set; } = false; // Untuk Soft Delete sesuai panduan
-
+        public bool IsDeleted { get; set; } = false; // Untuk Soft Delete
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        // --- RELASI (Navigation Properties) ---
-
-        [ForeignKey("RoomId")]
-        public virtual Room? Room { get; set; }
-
-        [ForeignKey("UserId")]
-        public virtual User? User { get; set; }
     }
 }

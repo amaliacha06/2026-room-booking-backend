@@ -22,17 +22,43 @@ namespace RoomBookingBackend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BookingResponseDto>>> GetBookings()
         {
-            // PENTING: Pakai .Include agar Nama Ruangan & User bisa muncul di UI
+            // Pakai .Include agar Nama Ruangan & User bisa muncul di UI
             var bookings = await _context.Bookings
                 .Include(b => b.Room) // Ambil data ruangan
                 .Include(b => b.User)
                 .Where(b => b.IsDeleted == false)
                 .OrderByDescending(b => b.CreatedAt)
-                .Select(b => new BookingResponseDto // Ubah ke DTO di sini
+                .Select(b => new BookingResponseDto // Ubah ke DTO 
                 {
                     Id = b.Id,
                     RoomName = b.Room.Name,
-                    UserName = b.User.Username, // Ambil nama asli
+                    UserName = b.User.Username, 
+                    Purpose = b.Purpose,
+                    StartTime = b.StartTime,
+                    EndTime = b.EndTime,
+                    Status = b.Status,
+                    CreatedAt = b.CreatedAt
+                })
+                .ToListAsync();
+
+            return Ok(bookings);
+        }
+        [Authorize]
+        [HttpGet("my-bookings")]
+        public async Task<ActionResult<IEnumerable<BookingResponseDto>>> GetMyBookings()
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+
+            var bookings = await _context.Bookings
+                .Include(b => b.Room)
+                .Include(b => b.User)
+                .Where(b => b.UserId == userId && b.IsDeleted == false)
+                .OrderByDescending(b => b.CreatedAt)
+                .Select(b => new BookingResponseDto
+                {
+                    Id = b.Id,
+                    RoomName = b.Room.Name,
+                    UserName = b.User.Username,
                     Purpose = b.Purpose,
                     StartTime = b.StartTime,
                     EndTime = b.EndTime,
@@ -44,10 +70,11 @@ namespace RoomBookingBackend.Controllers
             return Ok(bookings);
         }
 
+
         // 2. POST: api/Bookings (Untuk fitur 'Pilih Rentang Waktu' & Simpan)
         [Authorize]
         [HttpPost]
-        // 1. Ganti return type ke BookingResponseDto dan parameter ke BookingCreateDto
+        // 1. return type ke BookingResponseDto dan parameter ke BookingCreateDto
         public async Task<ActionResult<BookingResponseDto>> CreateBooking(BookingCreateDto bookingDto)
         {
             // 1. Validasi: Jam Selesai tidak boleh sebelum Jam Mulai
@@ -55,11 +82,13 @@ namespace RoomBookingBackend.Controllers
             {
                 return BadRequest(new { message = "Waktu selesai harus lebih lambat dari waktu mulai!" });
             }
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+
             // 2. Mapping dari DTO ke Model asli database
             var booking = new Booking
             {
                 RoomId = bookingDto.RoomId,
-                UserId = bookingDto.UserId,
+                UserId = userId, // ambil dari token
                 Purpose = bookingDto.Purpose,
                 StartTime = bookingDto.StartTime,
                 EndTime = bookingDto.EndTime,
@@ -67,7 +96,7 @@ namespace RoomBookingBackend.Controllers
                 CreatedAt = DateTime.UtcNow,
                 IsDeleted = false
             };
-            // 3. LOGIKA VALIDASI BENTROK (Fitur Paling Penting!)
+            // 3. LOGIKA VALIDASI BENTROK
             var isConflict = await _context.Bookings
                 .AnyAsync(b => b.RoomId == booking.RoomId &&
                                b.IsDeleted == false &&
@@ -79,7 +108,7 @@ namespace RoomBookingBackend.Controllers
             {
                 return Conflict(new { message = "Maaf, ruangan sudah dipesan pada jam tersebut!" });
             }
-            //Lanjutkan simpan ke database
+            // simpan ke database
             booking.CreatedAt = DateTime.UtcNow;
 
             // 1. Simpan dulu ke database supaya punya ID
@@ -96,8 +125,8 @@ namespace RoomBookingBackend.Controllers
             return CreatedAtAction(nameof(GetBookings), new { id = booking.Id }, new BookingResponseDto
             {
                 Id = booking.Id,
-                RoomName = createdBooking?.Room?.Name ?? "N/A", // Sekarang ada namanya!
-                UserName = createdBooking?.User?.Username ?? "N/A", // Ada namanya juga!
+                RoomName = createdBooking?.Room?.Name ?? "N/A", 
+                UserName = createdBooking?.User?.Username ?? "N/A", 
                 Purpose = booking.Purpose,
                 StartTime = booking.StartTime,
                 EndTime = booking.EndTime,
@@ -115,7 +144,7 @@ namespace RoomBookingBackend.Controllers
                 .Include(b => b.Room)
                 .Include(b => b.User)
                 .Where(b => b.Id == id && b.IsDeleted == false)
-                .Select(b => new BookingResponseDto // Pakai DTO yang sudah ada
+                .Select(b => new BookingResponseDto 
                 {
                     Id = b.Id,
                     UserName = b.User.Username,
@@ -155,7 +184,7 @@ namespace RoomBookingBackend.Controllers
             booking.StartTime = updatedDto.StartTime;
             booking.EndTime = updatedDto.EndTime;
             booking.RoomId = updatedDto.RoomId;
-            
+
             await _context.SaveChangesAsync();
             return NoContent();
         }

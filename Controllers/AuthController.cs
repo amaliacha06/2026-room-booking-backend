@@ -4,10 +4,10 @@ using RoomBookingBackend.Data;
 using RoomBookingBackend.DTOs;
 using RoomBookingBackend.Models;
 using BCrypt.Net;
-using Microsoft.IdentityModel.Tokens; // 👈 TAMBAHAN: Untuk keamanan token
-using System.IdentityModel.Tokens.Jwt; // 👈 TAMBAHAN: Untuk membuat token JWT
-using System.Security.Claims; // 👈 TAMBAHAN: Untuk menyimpan data user di dalam token
-using System.Text; // 👈 TAMBAHAN: Untuk encoding kunci rahasia
+using Microsoft.IdentityModel.Tokens; // Untuk keamanan token
+using System.IdentityModel.Tokens.Jwt; //Untuk membuat token JWT
+using System.Security.Claims; // Untuk menyimpan data user di dalam token
+using System.Text; //  Untuk encoding kunci rahasia
 
 namespace RoomBookingBackend.Controllers
 {
@@ -16,8 +16,8 @@ namespace RoomBookingBackend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly IConfiguration _configuration; // 👈 TAMBAHAN: Agar bisa baca appsettings.json
-        // 👈 UPDATE: Tambahkan IConfiguration di Constructor
+        private readonly IConfiguration _configuration; //Agar bisa baca appsettings.json
+        // Tambahkan IConfiguration di Constructor
         public AuthController(AppDbContext context, IConfiguration configuration)
         {
             _context = context;
@@ -54,7 +54,7 @@ namespace RoomBookingBackend.Controllers
             return Ok("Registrasi akun berhasil!");
         }
 
-        // 2. ENDPOINT LOGIN (Nanti kita lengkapi dengan Token)
+        // 2. ENDPOINT LOGIN (Nanti lengkapi dengan Token)
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginDto request)
         {
@@ -71,17 +71,17 @@ namespace RoomBookingBackend.Controllers
             {
                 return BadRequest("Password salah!");
             }
-            // 👈 TAMBAHAN: Panggil fungsi buat token
+            // Panggil fungsi buat token
             var token = CreateToken(user);
 
             return Ok(new
             {
                 message = "Login sukses!",
-                token = token, // 👈 TAMBAHAN: Kirim token ke user
-                user = new { user.FullName, user.Email, user.Position }
+                token = token, // Kirim token ke user
+                user = new {  id = user.Id, user.FullName, user.Email, user.Position }
             });
         }
-        // 👈 TAMBAHAN: Fungsi baru untuk membuat Token JWT
+        // Fungsi baru untuk membuat Token JWT
         private string CreateToken(User user)
         {
             // Ambil data dari appsettings.json
